@@ -1,502 +1,417 @@
-/*-----------------------------------------------------------------------------------
-
- Template Name:Friendbook
- Template URI: themes.pixelstrap.com/friendbook
- Description: This is a social website
- Author: Pixelstrap
- Author URI: https://themeforest.net/user/pixelstrap
-
- ----------------------------------------------------------------------------------- */
-// 01.Loader
-// 02.Tap to top
-// 03.Image to background
-// 04.Favourite add 
-// 05.Create post
-// 06.App Btn
-// 07.React panel
-// 08.Comment page
-// 09.Mouseup
-// 10.Show more/infinite js
-// 11.Modal backdrop
-// 12.Sidebar open/close
-// 13.Header
-// 14.Album open/close
-// 15.Footer
-// 16.Setting filter
-// 17.Comment modal
-// 18.Expand search
-// 19.Dark
+jQuery(document).ready(function($) {
+	
+	"use strict";
+	
+//------- Notifications Dropdowns
+  $('.top-area > .setting-area > li > a').on("click",function(){
+	 var $parent = $(this).parent('li');
+	$parent.siblings().children('div').removeClass('active');
+	$(this).siblings('div').addClass('active');
+	  return false;
+  });
 
 
-/*=====================
-    1.Loader
- ==========================*/
+//------- remove class active on body
+$("body *").not('.top-area > .setting-area > li > a').on("click", function() {
+	$(".top-area > .setting-area > li > div").not('.searched').removeClass('active');
+	
+ });
+	
 
- $(window).on('load', function() {
-    setTimeout(function() {
-        $('.loading-text').fadeOut('slow');
-    }, 500);
-    $('.loading-text').remove('slow');
-    setTimeout(function() {
-        $('.pre-loader').fadeOut('slow');
-    }, 1000);
-    $('.pre-loader').remove('slow');
+//--- user setting dropdown on topbar	
+$('.user-img').on('click', function() {
+	$('.user-setting').toggleClass("active");
+});	
+	
+//--- side message box	
+$('.friendz-list > li, .chat-users > li').on('click', function() {
+	$('.chat-box').addClass("show");
+	return false;
+});	
+	$('.close-mesage').on('click', function() {
+		$('.chat-box').removeClass("show");
+		return false;
+	});	
+	
+//------ scrollbar plugin
+	if ($.isFunction($.fn.perfectScrollbar)) {
+		$('.dropdowns, .twiter-feed, .invition, .followers, .chatting-area, .peoples, #people-list, .chat-list > ul, .message-list, .chat-users, .left-menu').perfectScrollbar();
+	}
+
+/*--- socials menu scritp ---*/	
+	$('.trigger').on("click", function() {
+	    $(this).parent(".menu").toggleClass("active");
+	  });
+	
+/*--- emojies show on text area ---*/	
+	$('.add-smiles > span').on("click", function() {
+	    $(this).parent().siblings(".smiles-bunch").toggleClass("active");
+	  });
+
+// delete notifications
+$('.notification-box > ul li > i.del').on("click", function(){
+    $(this).parent().slideUp();
+	return false;
+  }); 	
+
+/*--- socials menu scritp ---*/	
+	$('.f-page > figure i').on("click", function() {
+	    $(".drop").toggleClass("active");
+	  });
+
+//===== Search Filter =====//
+	(function ($) {
+	// custom css expression for a case-insensitive contains()
+	jQuery.expr[':'].Contains = function(a,i,m){
+	  return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0;
+	};
+
+	function listFilter(searchDir, list) { 
+	  var form = $("<form>").attr({"class":"filterform","action":"#"}),
+	  input = $("<input>").attr({"class":"filterinput","type":"text","placeholder":"Search Contacts..."});
+	  $(form).append(input).appendTo(searchDir);
+
+	  $(input)
+	  .change( function () {
+		var filter = $(this).val();
+		if(filter) {
+		  $(list).find("li:not(:Contains(" + filter + "))").slideUp();
+		  $(list).find("li:Contains(" + filter + ")").slideDown();
+		} else {
+		  $(list).find("li").slideDown();
+		}
+		return false;
+	  })
+	  .keyup( function () {
+		$(this).change();
+	  });
+	}
+
+//search friends widget
+	$(function () {
+	  listFilter($("#searchDir"), $("#people-list"));
+	});
+	}(jQuery));	
+
+//progress line for page loader
+	$('body').show();
+	NProgress.start();
+	setTimeout(function() { NProgress.done(); $('.fade').removeClass('out'); }, 2000);
+	
+//--- bootstrap tooltip	
+	$(function () {
+	  $('[data-toggle="tooltip"]').tooltip();
+	});
+	
+// Sticky Sidebar & header
+	if($(window).width() < 769) {
+		jQuery(".sidebar").children().removeClass("stick-widget");
+	}
+
+	if ($.isFunction($.fn.stick_in_parent)) {
+		$('.stick-widget').stick_in_parent({
+			parent: '#page-contents',
+			offset_top: 60,
+		});
+
+		
+		$('.stick').stick_in_parent({
+		    parent: 'body',
+            offset_top: 0,
+		});
+		
+	}
+	
+/*--- topbar setting dropdown ---*/	
+	$(".we-page-setting").on("click", function() {
+	    $(".wesetting-dropdown").toggleClass("active");
+	  });	
+	  
+/*--- topbar toogle setting dropdown ---*/	
+$('#nightmode').on('change', function() {
+    if ($(this).is(':checked')) {
+        // Show popup window
+        $(".theme-layout").addClass('black');	
+    }
+	else {
+        $(".theme-layout").removeClass("black");
+    }
 });
 
-
-/*========================
-  2. Tap to top js
-  ==========================*/
-$(document).ready(function() {
-    $(window).on('scroll', function() {
-        if ($(this).scrollTop() > 600) {
-            $('.tap-top').fadeIn();
-        } else {
-            $('.tap-top').fadeOut();
-        }
-    });
-    $('.tap-top').on('click', function() {
-        $("html, body").animate({
-            scrollTop: 0
-        }, 600);
-        return false;
-    });
-
-});
-
-
-/*=====================
-  3. Image to background js
-  ==========================*/
-
-$(".bg-top").parent().addClass('b-top'); // background postion top
-$(".bg-bottom").parent().addClass('b-bottom'); // background postion bottom
-$(".bg-center").parent().addClass('b-center'); // background postion center
-$(".bg-left").parent().addClass('b-left'); // background postion left
-$(".bg-right").parent().addClass('b-right'); // background postion right
-$(".bg_size_content").parent().addClass('b_size_content'); // background size content
-$(".bg-img").parent().addClass('bg-size');
-$(".bg-img.blur-up").parent().addClass('blur-up lazyload');
-$('.bg-img').each(function() {
-
-    var el = $(this),
-        src = el.attr('src'),
-        parent = el.parent();
-
-
-    parent.css({
-        'background-image': 'url(' + src + ')',
-        'background-size': 'cover',
-        'background-position': 'center',
-        'background-repeat': 'no-repeat',
-        'display': 'block'
-    });
-
-    el.hide();
-});
-
-/*=====================
-  4. Favourite add js
-==========================*/
-
-$(".favourite-btn").on("click", function() {
-    $(this).toggleClass("active");
-});
-
-
-/*========================
- 5. Create post js
-==========================*/
-
-$(".create-post").on("click", function() {
-    $(this).addClass("active");
-});
-
-
-$("#create-overlay").on("click", function() {
-    $("body").addClass("create-overlay");
-});
-
-$(".close-btn").on("click", function() {
-    $("body").removeClass("create-overlay");
-    $(".create-post ").removeClass("active");
-});
-
-
-var myValue;
-
-function clickGradient(val) {
-    myValue = val;
-}
-$(".gradient-bg li").on("click", function() {
-    $(".static-section").addClass("d-none");
-    $("#bg-post").removeClass();
-    $("#bg-post").addClass("bg-post d-block  " + myValue)
-});
-
-$("#bg-post .close-icon").on("click", function() {
-    $(".static-section").removeClass("d-none");
-    $("#bg-post").removeClass();
-    $("#bg-post").addClass("bg-post");
-    $('.Disable').prop("disabled", true);
-});
-
-
-$(".modal .gradient-bg li").on("click", function() {
-    $(".modal .static-section").addClass("d-none");
-    $("#bg-post1").removeClass();
-    $("#bg-post1").addClass("bg-post d-block  " + myValue)
-});
-
-$("#bg-post1 .close-icon").on("click", function() {
-    $(".modal .static-section").removeClass("d-none");
-    $("#bg-post1").removeClass();
-    $("#bg-post1").addClass("bg-post");
-    $('.Disable').prop("disabled", true);
-});
-
-$(".enable").click(function(event) {
-    event.preventDefault();
-    $('.Disable').prop("disabled", false);
-    $('.post-btn').addClass("d-block")
-});
-
-var content_width = jQuery(window).width();
-if ((content_width) <= '576') {
-    $(".create-post").on("click", function() {
-        $(".overlay-bg").addClass("show");
-        $('body').css({
-            'overflow': 'hidden',
-        });
-    });
-    $(".overlay-bg").on("click", function() {
-        $(".overlay-bg").removeClass("show");
-        $("#bg-post").removeClass();
-        $("#bg-post").addClass("bg-post");
-        $('body').css({
-            'overflow': 'auto',
-        });
-    });
-
+//chosen select plugin
+if ($.isFunction($.fn.chosen)) {
+	$("select").chosen();
 }
 
-// additional input 
-$("#feeling-btn").on("click", function(){
-    $("#additional-input").addClass("feeling");
-    $("#additional-input").removeClass("place");
-    $("#additional-input").removeClass("friends");
-    var feeling_activity = $( "#additional-input .feeling-input .form-control").val()
-})
-$("#checkin-btn").on("click", function(){
-    $("#additional-input").addClass("place");
-    $("#additional-input").removeClass("feeling");
-    $("#additional-input").removeClass("friends");
-})
-$("#friends-btn").on("click", function(){
-    $("#additional-input").addClass("friends");
-    $("#additional-input").removeClass("feeling");
-    $("#additional-input").removeClass("place");
-})
-$("#icon-close").on("click", function(){
-    $("#additional-input").removeClass("friends");
-    $("#additional-input").removeClass("feeling");
-    $("#additional-input").removeClass("place");
-})
+//----- add item plus minus button
+if ($.isFunction($.fn.userincr)) {
+	$(".manual-adjust").userincr({
+		buttonlabels:{'dec':'-','inc':'+'},
+	}).data({'min':0,'max':20,'step':1});
+}	
+	
+if ($.isFunction($.fn.loadMoreResults)) {	
+	$('.loadMore').loadMoreResults({
+		displayedItems: 3,
+		showItems: 1,
+		button: {
+		  'class': 'btn-load-more',
+		  'text': 'Load More'
+		}
+	});	
+}
+	//===== owl carousel  =====//
+	if ($.isFunction($.fn.owlCarousel)) {
+		$('.sponsor-logo').owlCarousel({
+			items: 6,
+			loop: true,
+			margin: 30,
+			autoplay: true,
+			autoplayTimeout: 1500,
+			smartSpeed: 1000,
+			autoplayHoverPause: true,
+			nav: false,
+			dots: false,
+			responsiveClass:true,
+				responsive:{
+					0:{
+						items:3,
+					},
+					600:{
+						items:3,
 
+					},
+					1000:{
+						items:6,
+					}
+				}
 
-/*========================
-  6. App Btn js
-==========================*/
-$(".app-btn a").on("click", function() {
-    $(".app-btn .app-box").addClass("show");
-    $(".app-overlay").addClass("show");
-    $('body').css({
-        'overflow': 'hidden',
-    });
-});
-$(".app-overlay").on("click", function() {
-    $(".app-btn .app-box").removeClass("show");
-    $(".app-overlay").removeClass("show");
-    $('body').css({
-        'overflow': 'auto',
-    });
-});
-
-
-/*========================
-  7. React panel js
-==========================*/
-
-$(".react-click").on("click", function() {
-    $(this).parents(".react-btn").find(".react-box").toggleClass("show");
-});
-
-
-/*========================
-  8. Comment js
-==========================*/
-$(".comment-click").on("click", function() {
-    $('.ldr-comments').show();
-    $('.comment-section .main-comment').hide();
-    setTimeout(function() {
-        $('.ldr-comments').hide();
-        $('.comment-section .main-comment').show();
-    }, 2000);
-    $(this).parents(".post-details").find(".comment-section .comments").toggleClass("d-block");
-});
-
-/*========================
-  9. Mouseup js
-==========================*/
-
-$(document).mouseup(function(e) {
-
-    // create post
-    var post = $(".create-post");
-    if (!post.is(e.target) &&
-        post.has(e.target).length === 0) {
-        $(".create-post").removeClass("active");
-        $("#post-btn").removeClass();
-        $("#post-btn").addClass("post-btn d-none");
-        $("#post-btn1").removeClass();
-        $("#post-btn1").addClass("post-btn d-none");
-        $("overlay-bg").removeClass("active");
-    }
-
-    // react panel
-    var react = $(".react-btn");
-    if (!react.is(e.target) &&
-        react.has(e.target).length === 0) {
-        $(".react-box").removeClass("show");
-    }
-
-    // sidebar 
-    var sidebar = $(".fixed-sidebar");
-    if (!sidebar.is(e.target) &&
-        sidebar.has(e.target).length === 0) {
-        $(".fixed-sidebar").removeClass("show");
-        $("body").removeClass("sidebar-overlay");
-    }
-
-
-    // searchbar 
-    var searchbar = $(".search-box");
-    if (!searchbar.is(e.target) &&
-        searchbar.has(e.target).length === 0) {
-        $(".search-box").removeClass("show");
-    }
-
-});
-
-
-/*=====================
- 10. Show more/infinite js
-==========================*/
+		});
+	}
+	
+// slick carousel for detail page
+	if ($.isFunction($.fn.slick)) {
+	$('.slider-for-gold').slick({
+		slidesToShow: 1,
+		slidesToScroll: 1,
+		arrows: false,
+		slide: 'li',
+		fade: false,
+		asNavFor: '.slider-nav-gold'
+	});
+	
+	$('.slider-nav-gold').slick({
+		slidesToShow: 3,
+		slidesToScroll: 1,
+		asNavFor: '.slider-for-gold',
+		dots: false,
+		arrows: true,
+		slide: 'li',
+		vertical: true,
+		centerMode: true,
+		centerPadding: '0',
+		focusOnSelect: true,
+		responsive: [
+		{
+			breakpoint: 768,
+			settings: {
+				slidesToShow: 3,
+				slidesToScroll: 1,
+				infinite: true,
+				vertical: false,
+				centerMode: true,
+				dots: false,
+				arrows: false
+			}
+		},
+		{
+			breakpoint: 641,
+			settings: {
+				slidesToShow: 3,
+				slidesToScroll: 1,
+				infinite: true,
+				vertical: true,
+				centerMode: true,
+				dots: false,
+				arrows: false
+			}
+		},
+		{
+			breakpoint: 420,
+			settings: {
+				slidesToShow: 3,
+				slidesToScroll: 1,
+				infinite: true,
+				vertical: false,
+				centerMode: true,
+				dots: false,
+				arrows: false
+			}
+		}	
+		]
+	});
+}
+	
+//---- responsive header
+	
 $(function() {
-    $(".infinite-loader-sec .col-grid-box").slice(0, 5).show();
-    var window_width = jQuery(window).width();
-    if ((window_width) > '1199') {
-        $("#load-more").on('click', function(e) {
-            e.preventDefault();
-            $(".infinite-loader-sec .col-grid-box:hidden").slice(0, 1).slideDown();
-            if ($(".infinite-loader-sec .col-grid-box:hidden").length === 0) {
-                $("#load-more").addClass('no-more');
-            }
-        });
-    }
-});
 
+	//	create the menus
+	$('#menu').mmenu();
+	$('#shoppingbag').mmenu({
+		navbar: {
+			title: 'General Setting'
+		},
+		offCanvas: {
+			position: 'right'
+		}
+	});
 
-/*=====================
- 11. Modal backdrop hidden
- ==========================*/
-// var window_width = jQuery(window).width();
-// if ((window_width) < '576') {
-//     $('#shareModal').modal({
-//         show: false,
-//         backdrop: false
-//     });
-// }
+	//	fire the plugin
+	$('.mh-head.first').mhead({
+		scroll: {
+			hide: 200
+		}
+		
+	});
+	$('.mh-head.second').mhead({
+		scroll: false
+	});
 
+	
+});		
 
-/*=====================
- 12.  Sidebar open/close js
- ==========================*/
-$("#nav-sidebar").on("click", function() {
-    $(".fixed-sidebar").addClass("show");
-    $("body").addClass("sidebar-overlay");
-});
+//**** Slide Panel Toggle ***//
+	  $("span.main-menu").on("click", function(){
+	     $(".side-panel").toggleClass('active');
+		  $(".theme-layout").toggleClass('active');
+		  return false;
+	  });
 
+	  $('.theme-layout').on("click",function(){
+		  $(this).removeClass('active');
+	     $(".side-panel").removeClass('active');
+	  });
 
-/*=====================
- 13. Header js
- ==========================*/
-var window_width = jQuery(window).width();
-if ((window_width) < '576') {
-    $('.header-btn').on('show.bs.dropdown', function() {
-        $("body").addClass("header-overlay");
-    })
-}
+	  
+// login & register form
+	$('button.signup').on("click", function(){
+		$('.login-reg-bg').addClass('show');
+		return false;
+	  });
+	  
+	  $('.already-have').on("click", function(){
+		$('.login-reg-bg').removeClass('show');
+		return false;
+	  });
+	
+//----- count down timer		
+	if ($.isFunction($.fn.downCount)) {
+		$('.countdown').downCount({
+			date: '11/12/2018 12:00:00',
+			offset: +10
+		});
+	}
+	
+/** Post a Comment **/
+jQuery(".post-comt-box textarea").on("keydown", function(event) {
 
-$(".navbar-toggler").on("click", function() {
-    $(".navbar .overlay-bg").addClass("show");
-    $(".navbar-collapse").addClass("show");
-    $('body').css({
-        'overflow': 'hidden',
-    });
-});
-
-$(".navbar .back-btn").on("click", function() {
-    $(".navbar .overlay-bg").removeClass("show");
-    $(".navbar-collapse").removeClass("show");
-    $('body').css({
-        'overflow': 'auto',
-    });
-});
-
-
-
-// profile page js 
-/*=====================
-  14. Album open/close
- ==========================*/
-$(".gallery-album .collection").on("click", function() {
-    $(".gallery-open").addClass("d-block");
-    $(".gallery-album").addClass("d-none")
-});
-
-$(".gallery-open .close-album").on("click", function() {
-    $(".gallery-open").removeClass("d-block");
-    $(".gallery-album").removeClass("d-none")
-});
-
-
-/*=====================
- 15. Footer js
- ==========================*/
-
-var contentwidth = jQuery(window).width();
-if ((contentwidth) < '767') {
-    jQuery('.footer-title h4').append('<span class="according-menu"><i class="fas fa-chevron-down"></i></span>');
-    jQuery('.footer-title').click(function() {
-        jQuery('.footer-title').removeClass('active');
-        jQuery('.footer-content').slideUp('normal');
-        if (jQuery(this).next().is(':hidden') == true) {
-            jQuery(this).addClass('active');
-            jQuery(this).find('span').replaceWith('<span class="according-menu"><i class="fas fa-chevron-up"></i></span>');
-            jQuery(this).next().slideDown('normal');
-        } else {
-            jQuery(this).find('span').replaceWith('<span class="according-menu"><i class="fas fa-chevron-down"></i></span>');
-        }
-    });
-    jQuery('.footer-content').hide();
-} else {
-    jQuery('.footer-content').show();
-}
-
-
-/*=====================
- 16. Setting filter
- ==========================*/
-$(".setting-section .detail-box").on("click", function() {
-    var _box = $(this).data("class");
-    $(".setting-sidebar .tab-section .nav .nav-link").each(function(index) {
-        var _attr = $(this).attr("aria-controls");
-        if (_box == _attr) {
-            $(this).trigger("click");
-        }
-    });
-});
-
-$(".setting-menu").on("click", function() {
-    $(".setting-section .setting-sidebar").addClass("show");
-});
-
-$(".setting-section .back-btn").on("click", function() {
-    $(".setting-section .setting-sidebar").removeClass("show");
-});
-
-
-/*=====================
-  17. Comment modal js 
- ==========================*/
-$('#imageModel').on('hidden.bs.modal', function(e) {
-    $('body').removeClass('filter-blur');
-})
-
-$('#imageModel').on('shown.bs.modal', function() {
-    $('body').addClass('filter-blur');
-    $('.slide-1').slick({
-        infinite: false,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        fade: true,
-        dots: true,
-        dotsClass: 'custom_paging',
-        customPaging: function(slider, i) {
-            return (i + 1) + '/' + slider.slideCount;
-        }
+	if (event.keyCode == 13) {
+		var comment = jQuery(this).val();
+		var parent = jQuery(".showmore").parent("li");
+		var comment_HTML = '	<li><div class="comet-avatar"><img src="images/resources/comet-1.jpg" alt=""></div><div class="we-comment"><div class="coment-head"><h5><a href="time-line.html" title="">Jason borne</a></h5><span>1 year ago</span><a class="we-reply" href="#" title="Reply"><i class="fa fa-reply"></i></a></div><p>'+comment+'</p></div></li>';
+		$(comment_HTML).insertBefore(parent);
+		jQuery(this).val('');
+	}
+}); 
+	
+//inbox page 	
+//***** Message Star *****//  
+    $('.message-list > li > span.star-this').on("click", function(){
+    	$(this).toggleClass('starred');
     });
 
-});
 
-
-/*=====================
-  18. Expand search js 
- ==========================*/
- $(".xs-search .icon-search").on("click", function() {
-    $(this).parents(".xs-search").addClass("open-full");
-});
-
-$(".xs-search .icon-close").on("click", function() {
-    $(this).parents(".xs-search").removeClass("open-full");
-});
-
-$(".search-type").on("click", function() {
-    $(this).parents(".search-box").addClass("show");
-});
-
-$(".search-box .icon-close").on("click", function() {
-    $(this).parents(".search-box").removeClass("show");
-});
-
-/*=====================
-   19. Dark js 
- ==========================*/
-
-$(document).ready(function() {
-    $("#dark").click(function() {
-        $(this).parent(".header-btn").find("#light").addClass("d-inline-block");
-        $(this).parent(".header-btn").find("#dark").addClass("d-none");
-        $("#change-link").attr("href", "../assets/css/dark.css");
+//***** Message Important *****//
+    $('.message-list > li > span.make-important').on("click", function(){
+    	$(this).toggleClass('important-done');
     });
-    $("#light").click(function() {
-        $(this).parent(".header-btn").find("#light").removeClass("d-inline-block");
-        $(this).parent(".header-btn").find("#dark").removeClass("d-none")
-        $("#change-link").attr("href", "../assets/css/style.css");
-    });
-});	
-$(document).ready(function() {
-    $("#dark-1").click(function() {
-        $(this).parent(".header-btn").find("#light-1").addClass("d-inline-block");
-        $(this).parent(".header-btn").find("#dark-1").addClass("d-none");
-        $("#change-link").attr("href", "../assets/css/dark-1.css");
-    });
-    $("#light-1").click(function() {
-        $(this).parent(".header-btn").find("#light-1").removeClass("d-inline-block");
-        $(this).parent(".header-btn").find("#dark-1").removeClass("d-none")
-        $("#change-link").attr("href", "../assets/css/style-1.css");
-    });
-});	
-$(document).ready(function() {
-    $("#dark-2").click(function() {
-        $(this).parent(".header-btn").find("#light-2").addClass("d-inline-block");
-        $(this).parent(".header-btn").find("#dark-2").addClass("d-none");
-        $("#change-link").attr("href", "../assets/css/dark-2.css");
-    });
-    $("#light-2").click(function() {
-        $(this).parent(".header-btn").find("#light-2").removeClass("d-inline-block");
-        $(this).parent(".header-btn").find("#dark-2").removeClass("d-none")
-        $("#change-link").attr("href", "../assets/css/style-2.css");
-    });
-});
+
+    
+
+// Listen for click on toggle checkbox
+	$('#select_all').on("click", function(event) {
+	  if(this.checked) {
+	      // Iterate each checkbox
+	      $('input:checkbox.select-message').each(function() {
+	          this.checked = true;
+	      });
+	  }
+	  else {
+	    $('input:checkbox.select-message').each(function() {
+	          this.checked = false;
+	      });
+	  }
+	});
+
+
+	$(".delete-email").on("click",function(){
+		$(".message-list .select-message").each(function(){
+			  if(this.checked) {
+			  	$(this).parent().slideUp();
+			  }
+		});
+	});
+
+// change background color on hover
+	$('.category-box').hover(function () {
+		$(this).addClass('selected');
+		$(this).parent().siblings().children('.category-box').removeClass('selected');
+	});
+	
+	
+//------- offcanvas menu 
+
+	const menu = document.querySelector('#toggle');  
+	const menuItems = document.querySelector('#overlay');  
+	const menuContainer = document.querySelector('.menu-container');  
+	const menuIcon = document.querySelector('.canvas-menu i');  
+
+	function toggleMenu(e) {
+		menuItems.classList.toggle('open');
+		menuContainer.classList.toggle('full-menu');
+		menuIcon.classList.toggle('fa-bars');
+		menuIcon.classList.add('fa-times');
+		e.preventDefault();
+	}
+
+	if( menu ) {
+		menu.addEventListener('click', toggleMenu, false);	
+	}
+	
+// Responsive nav dropdowns
+	$('.offcanvas-menu li.menu-item-has-children > a').on('click', function () {
+		$(this).parent().siblings().children('ul').slideUp();
+		$(this).parent().siblings().removeClass('active');
+		$(this).parent().children('ul').slideToggle();
+		$(this).parent().toggleClass('active');
+		return false;
+	});	
+// new post box	
+$(".new-postbox").click(function () {
+    $(".postoverlay").fadeIn(500);
+  });
+  $(".postoverlay").not(".new-postbox").click(function() {
+    $(".postoverlay").fadeOut(500);
+  });
+  $("[type = submit]").click(function () {
+    var post = $("textarea").val();
+    $("<p class='post'>" + post + "</p>").appendTo("section");
+  });
+
+});//document ready end
+
+
+
+
+
